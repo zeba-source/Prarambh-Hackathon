@@ -1,0 +1,299 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 15% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 20%;
+
+    --primary: 220 90% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 140 60% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 15% 96%;
+    --muted-foreground: 220 10% 50%;
+
+    --accent: 220 85% 95%;
+    --accent-foreground: 220 90% 50%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 220 90% 50%;
+
+    --pending: 45 95% 55%;
+    --pending-foreground: 45 100% 10%;
+
+    --in-progress: 210 100% 50%;
+    --in-progress-foreground: 0 0% 100%;
+
+    --resolved: 140 60% 45%;
+    --resolved-foreground: 0 0% 100%;
+
+    --gradient-header: linear-gradient(135deg, hsl(220 90% 50%) 0%, hsl(210 85% 60%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 85% 99%) 100%);
+
+    --shadow-sm: 0 1px 2px 0 hsl(220 15% 20% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(220 15% 20% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(220 15% 20% / 0.1);
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 25% 8%;
+    --foreground: 220 15% 95%;
+
+    --card: 220 22% 12%;
+    --card-foreground: 220 15% 95%;
+
+    --popover: 220 22% 12%;
+    --popover-foreground: 220 15% 95%;
+
+    --primary: 220 90% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 140 60% 50%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 10% 70%;
+
+    --accent: 220 40% 16%;
+    --accent-foreground: 220 90% 60%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 22%;
+    --input: 220 20% 20%;
+    --ring: 220 90% 55%;
+
+    --gradient-header: linear-gradient(135deg, hsl(220 85% 35%) 0%, hsl(210 80% 45%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(220 22% 12%) 0%, hsl(220 22% 14%) 100%);
+    
+    --sidebar-background: 220 25% 10%;
+    --sidebar-foreground: 220 15% 90%;
+    --sidebar-primary: 220 90% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 25% 15%;
+    --sidebar-accent-foreground: 220 15% 95%;
+    --sidebar-border: 220 20% 22%;
+    --sidebar-ring: 220 90% 55%;
+
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Ensure dark mode is fully applied */
+  .dark body {
+    @apply bg-[hsl(220,25%,8%)];
+  }
+
+  /* Dark mode enhancements for better contrast */
+  .dark input,
+  .dark textarea,
+  .dark select {
+    @apply bg-[hsl(220,20%,20%)] border-[hsl(220,20%,22%)];
+  }
+
+  .dark input:focus,
+  .dark textarea:focus,
+  .dark select:focus {
+    @apply border-primary ring-primary/20;
+  }
+
+  /* Dark mode gradients */
+  .dark .bg-gradient-to-br {
+    background: linear-gradient(to bottom right, hsl(220 25% 8%), hsl(220 22% 12%), hsl(220 20% 10%));
+  }
+
+  .dark .bg-gradient-to-r {
+    background: linear-gradient(to right, hsl(220 85% 35%), hsl(210 80% 45%));
+  }
+}
+
+/* Custom Severity Slider Styles */
+@layer components {
+  .slider-low [role="slider"] {
+    @apply bg-green-600 border-green-700;
+  }
+  
+  .slider-low [data-slider-track] {
+    @apply bg-green-200 dark:bg-green-900;
+  }
+  
+  .slider-medium [role="slider"] {
+    @apply bg-yellow-600 border-yellow-700;
+  }
+  
+  .slider-medium [data-slider-track] {
+    @apply bg-yellow-200 dark:bg-yellow-900;
+  }
+  
+  .slider-high [role="slider"] {
+    @apply bg-red-600 border-red-700;
+  }
+  
+  .slider-high [data-slider-track] {
+    @apply bg-red-200 dark:bg-red-900;
+  }
+
+  /* Dark mode specific overrides */
+  .dark .bg-blue-50 {
+    @apply bg-blue-950/50;
+  }
+
+  .dark .border-blue-200 {
+    @apply border-blue-800;
+  }
+
+  .dark .text-blue-800 {
+    @apply text-blue-200;
+  }
+
+  .dark .text-blue-600 {
+    @apply text-blue-400;
+  }
+
+  .dark .text-green-600 {
+    @apply text-green-400;
+  }
+
+  .dark .text-green-700 {
+    @apply text-green-300;
+  }
+
+  .dark .bg-green-50 {
+    @apply bg-green-950/50;
+  }
+
+  .dark .border-green-200 {
+    @apply border-green-800;
+  }
+
+  .dark .text-orange-600 {
+    @apply text-orange-400;
+  }
+
+  .dark .bg-accent\/50 {
+    @apply bg-accent/80;
+  }
+}
+
+/* Custom Leaflet Map Styles */
+@layer components {
+  /* Custom marker styles */
+  .custom-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  /* Custom popup styles */
+  .leaflet-popup-content-wrapper {
+    @apply rounded-lg shadow-lg border-2 border-gray-200;
+    padding: 0 !important;
+  }
+
+  .dark .leaflet-popup-content-wrapper {
+    @apply bg-card border-border;
+  }
+
+  .leaflet-popup-content {
+    margin: 0 !important;
+  }
+
+  .leaflet-popup-tip {
+    @apply bg-white;
+  }
+
+  .dark .leaflet-popup-tip {
+    @apply bg-card;
+  }
+
+  /* Custom popup close button */
+  .leaflet-popup-close-button {
+    @apply text-gray-500 hover:text-gray-700 transition-colors;
+    font-size: 24px !important;
+    padding: 4px 8px !important;
+  }
+
+  .dark .leaflet-popup-close-button {
+    @apply text-gray-400 hover:text-gray-200;
+  }
+
+  /* Map container styles */
+  .leaflet-container {
+    @apply font-sans;
+  }
+
+  /* Cluster marker styles (if using marker clustering in future) */
+  .marker-cluster-small {
+    @apply bg-blue-500/80;
+  }
+
+  .marker-cluster-medium {
+    @apply bg-orange-500/80;
+  }
+
+  .marker-cluster-large {
+    @apply bg-red-500/80;
+  }
+
+  /* Improve map controls for dark mode */
+  .dark .leaflet-control-zoom a {
+    @apply bg-card text-foreground border-border;
+  }
+
+  .dark .leaflet-control-zoom a:hover {
+    @apply bg-accent;
+  }
+
+  .dark .leaflet-bar {
+    @apply border-border;
+  }
+}
