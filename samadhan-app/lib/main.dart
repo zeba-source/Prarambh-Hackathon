@@ -19,9 +19,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const WelcomeScreen(),
-      routes: {
-        '/report': (context) => const ReportIssuePage(),
-      },
+      routes: {'/report': (context) => const ReportIssuePage()},
       debugShowCheckedModeBanner: false,
     );
   }

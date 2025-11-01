@@ -14,11 +14,11 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _addressController = TextEditingController();
-  
+
   String _selectedCategory = 'Infrastructure';
   String _selectedPriority = 'Medium';
-  List<File> _selectedImages = [];
-  
+  final List<File> _selectedImages = [];
+
   final List<String> _categories = [
     'Infrastructure',
     'Roads',
@@ -32,13 +32,8 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
     'Education',
     'Other',
   ];
-  
-  final List<String> _priorities = [
-    'Low',
-    'Medium',
-    'High',
-    'Critical',
-  ];
+
+  final List<String> _priorities = ['Low', 'Medium', 'High', 'Critical'];
 
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
@@ -49,12 +44,12 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
         maxHeight: 1024,
         imageQuality: 80,
       );
-      
+
       if (image != null) {
         setState(() {
           _selectedImages.add(File(image.path));
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Image added successfully!'),
@@ -98,10 +93,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
               const SizedBox(height: 20),
               const Text(
                 'Add Photo',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               Row(
@@ -126,7 +118,11 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
     );
   }
 
-  Widget _buildImageSourceOption(String title, IconData icon, VoidCallback onTap) {
+  Widget _buildImageSourceOption(
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.pop(context);
@@ -141,19 +137,12 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
               color: const Color(0xFF667eea).withOpacity(0.1),
               borderRadius: BorderRadius.circular(30),
             ),
-            child: Icon(
-              icon,
-              size: 30,
-              color: const Color(0xFF667eea),
-            ),
+            child: Icon(icon, size: 30, color: const Color(0xFF667eea)),
           ),
           const SizedBox(height: 8),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -169,7 +158,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
   void _submitReport() {
     if (_formKey.currentState!.validate()) {
       // Here you would typically send the data to your backend
-      
+
       // Show success dialog
       showDialog(
         context: context,
@@ -180,11 +169,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
             ),
             title: const Row(
               children: [
-                Icon(
-                  Icons.check_circle,
-                  color: Colors.green,
-                  size: 28,
-                ),
+                Icon(Icons.check_circle, color: Colors.green, size: 28),
                 SizedBox(width: 10),
                 Text('Success!'),
               ],
@@ -278,18 +263,15 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                     SizedBox(height: 8),
                     Text(
                       'Report issues in your area and help make a difference',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Issue Title
               _buildSectionTitle('Issue Title'),
               const SizedBox(height: 8),
@@ -306,11 +288,17 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                   return null;
                 },
                 maxLength: 100,
-                buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                buildCounter:
+                    (
+                      context, {
+                      required currentLength,
+                      required isFocused,
+                      maxLength,
+                    }) => null,
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Description
               _buildSectionTitle('Description'),
               const SizedBox(height: 8),
@@ -328,11 +316,17 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                 },
                 maxLines: 4,
                 maxLength: 500,
-                buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                buildCounter:
+                    (
+                      context, {
+                      required currentLength,
+                      required isFocused,
+                      maxLength,
+                    }) => null,
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Address
               _buildSectionTitle('Location/Address'),
               const SizedBox(height: 8),
@@ -349,16 +343,22 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                   return null;
                 },
                 maxLength: 200,
-                buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                buildCounter:
+                    (
+                      context, {
+                      required currentLength,
+                      required isFocused,
+                      maxLength,
+                    }) => null,
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Category Dropdown
               _buildSectionTitle('Category'),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: _buildInputDecoration(
                   'Select category',
                   Icons.category,
@@ -369,7 +369,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                   if (category == 'Safety & Security') displayName = 'Safety';
                   if (category == 'Waste Management') displayName = 'Waste';
                   if (category == 'Public Transport') displayName = 'Transport';
-                  
+
                   return DropdownMenuItem<String>(
                     value: category,
                     child: Text(
@@ -385,49 +385,47 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                   });
                 },
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Priority Dropdown
               _buildSectionTitle('Priority'),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _selectedPriority,
+                initialValue: _selectedPriority,
                 decoration: _buildInputDecoration(
                   'Select priority',
                   Icons.priority_high,
                 ),
                 items: _priorities.map((String priority) {
-                            Color priorityColor;
-                            switch (priority) {
-                              case 'Critical':
-                                priorityColor = Colors.red;
-                                break;
-                              case 'High':
-                                priorityColor = Colors.orange;
-                                break;
-                              case 'Medium':
-                                priorityColor = Colors.blue;
-                                break;
-                              default:
-                                priorityColor = Colors.green;
-                            }
-                            return DropdownMenuItem<String>(
-                              value: priority,
-                              child: Text(
-                                priority,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _selectedPriority = newValue!;                  });
+                  Color priorityColor;
+                  switch (priority) {
+                    case 'Critical':
+                      priorityColor = Colors.red;
+                      break;
+                    case 'High':
+                      priorityColor = Colors.orange;
+                      break;
+                    case 'Medium':
+                      priorityColor = Colors.blue;
+                      break;
+                    default:
+                      priorityColor = Colors.green;
+                  }
+                  return DropdownMenuItem<String>(
+                    value: priority,
+                    child: Text(priority, overflow: TextOverflow.ellipsis),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedPriority = newValue!;
+                  });
                 },
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Photos Section
               _buildSectionTitle('Photos (Optional)'),
               const SizedBox(height: 8),
@@ -483,18 +481,19 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                         ),
                       ),
                     ),
-                    
+
                     // Selected Images
                     if (_selectedImages.isNotEmpty) ...[
                       const SizedBox(height: 16),
                       GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                            ),
                         itemCount: _selectedImages.length,
                         itemBuilder: (context, index) {
                           return Stack(
@@ -535,9 +534,9 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Submit Button
               SizedBox(
                 width: double.infinity,
@@ -568,7 +567,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
             ],
           ),

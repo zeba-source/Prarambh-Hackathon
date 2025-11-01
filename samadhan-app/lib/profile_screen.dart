@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +19,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             const ProfilePic(),
             const SizedBox(height: 20),
-            
+
             // User Info Card
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -50,25 +49,19 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(height: 8),
                   Text(
                     "rahul.sharma@email.com",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   SizedBox(height: 4),
                   Text(
                     "📍 Mumbai, Maharashtra",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             ProfileMenu(
               text: "My Account",
               icon: Icons.person,
@@ -115,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-  
+
   static void _showFeatureDialog(BuildContext context, String feature) {
     showDialog(
       context: context,
@@ -131,9 +124,7 @@ class ProfileScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: Text(
-            'This feature will be available soon!',
-          ),
+          content: Text('This feature will be available soon!'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -150,7 +141,7 @@ class ProfileScreen extends StatelessWidget {
       },
     );
   }
-  
+
   static void _showLanguageDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -180,8 +171,12 @@ class ProfileScreen extends StatelessWidget {
       },
     );
   }
-  
-  static Widget _buildLanguageOption(BuildContext context, String language, String code) {
+
+  static Widget _buildLanguageOption(
+    BuildContext context,
+    String language,
+    String code,
+  ) {
     return ListTile(
       title: Text(language),
       onTap: () {
@@ -195,7 +190,7 @@ class ProfileScreen extends StatelessWidget {
       },
     );
   }
-  
+
   static void _showAboutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -206,11 +201,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           title: const Row(
             children: [
-              Icon(
-                Icons.info,
-                color: Color(0xFF667eea),
-                size: 28,
-              ),
+              Icon(Icons.info, color: Color(0xFF667eea), size: 28),
               SizedBox(width: 10),
               Text(
                 'About Samadhan',
@@ -242,7 +233,7 @@ class ProfileScreen extends StatelessWidget {
       },
     );
   }
-  
+
   static void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -253,25 +244,16 @@ class ProfileScreen extends StatelessWidget {
           ),
           title: const Row(
             children: [
-              Icon(
-                Icons.logout,
-                color: Colors.red,
-                size: 28,
-              ),
+              Icon(Icons.logout, color: Colors.red, size: 28),
               SizedBox(width: 10),
               Text('Logout'),
             ],
           ),
-          content: const Text(
-            'Are you sure you want to logout?',
-          ),
+          content: const Text('Are you sure you want to logout?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey),
-              ),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () {
@@ -299,9 +281,7 @@ class ProfileScreen extends StatelessWidget {
 }
 
 class ProfilePic extends StatelessWidget {
-  const ProfilePic({
-    super.key,
-  });
+  const ProfilePic({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -348,7 +328,7 @@ class ProfilePic extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -414,11 +394,7 @@ class ProfileMenu extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.grey[400],
-                size: 16,
-              ),
+              Icon(Icons.arrow_forward_ios, color: Colors.grey[400], size: 16),
             ],
           ),
         ),
