@@ -1,73 +1,622 @@
-# Welcome to your Lovable project
+Prarambh-Hackathon
+🚀 Garbage & Pothole Detector - API Integration Guide
+A comprehensive guide for integrating Gradio-based Hugging Face Spaces into web applications with complete API endpoint documentation.
 
-## Project info
+📋 Table of Contents
+Project Overview
+Project Structure
+API Endpoints Documentation
+Implementation Guide
+Integration Methods
+Code Examples
+Troubleshooting
+Best Practices
+🎯 Project Overview
+This project demonstrates how to connect a web interface to Gradio-based machine learning models hosted on Hugging Face Spaces. The example uses a garbage and pothole detection model, but the same approach can be applied to any Gradio app.
 
-**URL**: https://lovable.dev/projects/2bb14798-604c-4bde-aa63-02022d97ac4a
+Hugging Face Space: utkarsh-23/garbage-pothole-detector-app
 
-## How can I edit this code?
+Features
+Upload images via drag-and-drop or file picker
+Real-time object detection using Gradio API
+Display processed images with bounding boxes
+Department classification based on detected objects
+Downloadable results
+📁 Project Structure
+PRARAMBH/
+├── index.html              # Main web interface (simplified UI)
+├── test-interface.html     # Advanced API testing interface
+├── test-gradio.js         # Node.js testing script
+├── package.json           # Node.js dependencies
+├── package-lock.json      # Dependency lock file
+└── README.md             # This documentation
+🔌 API Endpoints Documentation
+Base Information
+Hugging Face Space: utkarsh-23/garbage-pothole-detector-app API Base URL: https://utkarsh-23-garbage-pothole-detector-app.hf.space/api/
 
-There are several ways of editing your application.
+Available Endpoints
+1. /detect_image - Image Detection (Method 1)
+Purpose: Detect garbage, potholes, and infrastructure in uploaded images
 
-**Use Lovable**
+Request:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2bb14798-604c-4bde-aa63-02022d97ac4a) and start prompting.
+{
+  image: Blob | File | Buffer  // Required: Image file
+}
+Response:
 
-Changes made via Lovable will be committed automatically to this repo.
+[
+  {
+    path: string,           // Server file path
+    url: string,           // Public URL to access result image
+    size: number | null,
+    orig_name: string,
+    mime_type: string | null,
+    is_stream: boolean,
+    meta: { _type: "gradio.FileData" }
+  },
+  string  // Department classification markdown text
+]
+2. /detect_image_1 - Image Detection (Method 2)
+Purpose: Alternative endpoint for image detection (same functionality)
 
-**Use your preferred IDE**
+Request/Response: Same as /detect_image
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+3. /detect_video - Video Detection
+Purpose: Detect objects in video files
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Request:
 
-Follow these steps:
+{
+  video_path: Blob | File | Buffer  // Required: Video file
+}
+Response:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+{
+  path: string,           // Server file path
+  url: string,           // Public URL to access result video
+  size: number | null,
+  orig_name: string,
+  mime_type: string | null,
+  is_stream: boolean,
+  meta: { _type: "gradio.FileData" }
+}
+🛠️ Implementation Guide
+Prerequisites
+For Browser-Based Implementation:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Modern web browser with ES6 module support
+Internet connection (for CDN access)
+For Node.js Implementation:
 
-# Step 3: Install the necessary dependencies.
-npm i
+npm install -D @gradio/client
+Installation Steps
+Clone or download this repository
+git clone https://github.com/Rishiraj-Pathak-27/Prarambh-Hackathon.git
+cd Prarambh-Hackathon
+Install dependencies (for Node.js testing)
+npm install
+Open the web interface
+# Windows
+Start-Process index.html
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+# Mac/Linux
+open index.html
+🔗 Integration Methods
+Method 1: Browser-Based Integration (Recommended for Web Apps)
+File: index.html
 
-**Edit a file directly in GitHub**
+Key Components:
+Import Gradio Client from CDN
+<script type="module">
+  import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
+</script>
+Connect to Gradio Space
+const client = await Client.connect("utkarsh-23/garbage-pothole-detector-app");
+Send Request with Image
+const result = await client.predict("/detect_image_1", { 
+    image: blob  // File or Blob object
+});
+Parse Response
+const [detectionImage, classification] = result.data;
+const imageUrl = detectionImage.url;  // Display this image
+const classificationText = classification;  // Display this text
+Method 2: Node.js Integration (Recommended for Backend/Testing)
+File: test-gradio.js
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Key Components:
+Import Gradio Client
+import { Client } from "@gradio/client";
+Fetch and Prepare Image
+const response = await fetch("IMAGE_URL");
+const imageBlob = await response.blob();
+Connect and Predict
+const client = await Client.connect("utkarsh-23/garbage-pothole-detector-app");
+const result = await client.predict("/detect_image_1", { 
+    image: imageBlob 
+});
+Handle Response
+const [detectionImage, classification] = result.data;
+console.log("Image URL:", detectionImage.url);
+console.log("Classification:", classification);
+💻 Code Examples
+Example 1: Complete Browser Implementation
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gradio API Integration</title>
+</head>
+<body>
+    <input type="file" id="fileInput" accept="image/*">
+    <button onclick="detectImage()">Detect</button>
+    <div id="results"></div>
 
-**Use GitHub Codespaces**
+    <script type="module">
+        import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+        window.detectImage = async function() {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) return alert('Please select an image');
 
-## What technologies are used for this project?
+            try {
+                // Connect to Gradio app
+                const client = await Client.connect(
+                    "utkarsh-23/garbage-pothole-detector-app"
+                );
 
-This project is built with:
+                // Convert file to blob
+                const blob = new Blob([file], { type: file.type });
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+                // Call API
+                const result = await client.predict("/detect_image_1", { 
+                    image: blob 
+                });
 
-## How can I deploy this project?
+                // Display results
+                const [detectionImage, classification] = result.data;
+                document.getElementById('results').innerHTML = `
+                    <img src="${detectionImage.url}" alt="Result">
+                    <p>${classification}</p>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Detection failed: ' + error.message);
+            }
+        };
+    </script>
+</body>
+</html>
+Example 2: Node.js Script
+import { Client } from "@gradio/client";
+import fs from 'fs';
 
-Simply open [Lovable](https://lovable.dev/projects/2bb14798-604c-4bde-aa63-02022d97ac4a) and click on Share -> Publish.
+async function detectImage(imagePath) {
+    try {
+        // Read local image file
+        const imageBuffer = fs.readFileSync(imagePath);
+        const blob = new Blob([imageBuffer]);
 
-## Can I connect a custom domain to my Lovable project?
+        // Connect to Gradio app
+        const client = await Client.connect(
+            "utkarsh-23/garbage-pothole-detector-app"
+        );
 
-Yes, you can!
+        // Call API
+        const result = await client.predict("/detect_image_1", { 
+            image: blob 
+        });
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+        // Parse results
+        const [detectionImage, classification] = result.data;
+        
+        console.log("Detection Image URL:", detectionImage.url);
+        console.log("Classification:", classification);
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+        return result.data;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+}
+
+// Usage
+detectImage('./path/to/image.jpg');
+Example 3: React Integration
+import { Client } from "@gradio/client";
+import { useState } from 'react';
+
+function GradioDetector() {
+    const [result, setResult] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const handleDetect = async (file) => {
+        setLoading(true);
+        try {
+            const client = await Client.connect(
+                "utkarsh-23/garbage-pothole-detector-app"
+            );
+            
+            const blob = new Blob([file], { type: file.type });
+            const response = await client.predict("/detect_image_1", { 
+                image: blob 
+            });
+            
+            setResult(response.data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div>
+            <input 
+                type="file" 
+                onChange={(e) => handleDetect(e.target.files[0])}
+            />
+            {loading && <p>Processing...</p>}
+            {result && (
+                <div>
+                    <img src={result[0].url} alt="Detection" />
+                    <p>{result[1]}</p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default GradioDetector;
+Example 4: Vue.js Integration
+<template>
+  <div>
+    <input type="file" @change="handleFileChange" accept="image/*">
+    <button @click="detectImage" :disabled="loading">Detect</button>
+    <div v-if="loading">Processing...</div>
+    <div v-if="result">
+      <img :src="result[0].url" alt="Detection Result">
+      <p>{{ result[1] }}</p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { Client } from '@gradio/client';
+
+const file = ref(null);
+const result = ref(null);
+const loading = ref(false);
+
+const handleFileChange = (event) => {
+  file.value = event.target.files[0];
+};
+
+const detectImage = async () => {
+  if (!file.value) return;
+  
+  loading.value = true;
+  try {
+    const client = await Client.connect(
+      "utkarsh-23/garbage-pothole-detector-app"
+    );
+    
+    const blob = new Blob([file.value], { type: file.value.type });
+    const response = await client.predict("/detect_image_1", { 
+      image: blob 
+    });
+    
+    result.value = response.data;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
+};
+</script>
+Example 5: Flutter/Dart Integration
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+Future<Map<String, dynamic>> detectImage(String imagePath) async {
+  var request = http.MultipartRequest(
+    'POST',
+    Uri.parse('https://utkarsh-23-garbage-pothole-detector-app.hf.space/api/predict')
+  );
+  
+  request.files.add(await http.MultipartFile.fromPath('image', imagePath));
+  request.fields['fn_index'] = '0';
+  
+  var response = await request.send();
+  var responseData = await response.stream.bytesToString();
+  
+  return json.decode(responseData);
+}
+🔍 How the Connection Works
+Step-by-Step Flow
+1. User uploads image
+   ↓
+2. JavaScript converts image to Blob/Buffer
+   ↓
+3. Gradio Client connects to Hugging Face Space
+   ↓
+4. Client.predict() sends image to endpoint
+   ↓
+5. Hugging Face processes image with ML model
+   ↓
+6. API returns:
+   - Processed image with bounding boxes
+   - Classification text
+   ↓
+7. Display results in UI
+Data Flow Diagram
+┌─────────────────┐
+│   User Browser  │
+│   (index.html)  │
+└────────┬────────┘
+         │ 1. Upload Image
+         ↓
+┌─────────────────┐
+│ Gradio Client   │
+│ (CDN Library)   │
+└────────┬────────┘
+         │ 2. API Request
+         ↓
+┌─────────────────────────────────┐
+│  Hugging Face Space             │
+│  utkarsh-23/garbage-pothole-    │
+│  detector-app                   │
+│                                 │
+│  ┌─────────────────────────┐  │
+│  │  Gradio API Server      │  │
+│  └───────┬─────────────────┘  │
+│          │                      │
+│  ┌───────▼─────────────────┐  │
+│  │  ML Detection Model      │  │
+│  │  (YOLOv8/Custom)        │  │
+│  └───────┬─────────────────┘  │
+│          │                      │
+│  ┌───────▼─────────────────┐  │
+│  │  Process & Annotate     │  │
+│  │  Image                  │  │
+│  └─────────────────────────┘  │
+└────────┬────────────────────────┘
+         │ 3. API Response
+         ↓
+┌─────────────────┐
+│   Results       │
+│   - Image URL   │
+│   - Text Data   │
+└─────────────────┘
+🧪 Testing
+Run Node.js Test Script
+node test-gradio.js
+Expected Output:
+
+🚀 Starting Gradio API Test...
+📥 Fetching test image from GitHub...
+✅ Image fetched: 1951 bytes, type: image/png
+🔗 Connecting to Hugging Face Space...
+✅ Connected to Gradio app
+📤 Sending image to /detect_image_1 endpoint...
+✅ Response received from Hugging Face!
+============================================================
+RESPONSE DETAILS
+============================================================
+📸 Detection Results Image: {...}
+🏢 Department Classification: {...}
+============================================================
+Test in Browser
+Open index.html in your browser
+Upload a test image (preferably with garbage/potholes)
+Click "Detect Objects"
+View results with bounding boxes and classification
+⚠️ Troubleshooting
+Common Issues and Solutions
+1. CORS Errors in Browser
+Error: Access to fetch blocked by CORS policy
+
+Solution:
+
+Use the CDN import method (as shown in index.html)
+Gradio apps on Hugging Face have CORS enabled by default
+If hosting locally, ensure your server has CORS enabled
+2. Module Not Found (Node.js)
+Error: Cannot find module '@gradio/client'
+
+Solution:
+
+npm install -D @gradio/client
+Ensure package.json has:
+
+{
+  "type": "module",
+  "devDependencies": {
+    "@gradio/client": "^2.0.0-dev.1"
+  }
+}
+3. Connection Timeout
+Error: Failed to connect to Gradio app
+
+Solution:
+
+Check internet connection
+Verify Hugging Face Space is running
+Wait a few moments (Space may be sleeping)
+Try again - Spaces auto-wake on first request
+4. Invalid Response Format
+Error: Cannot read property 'url' of undefined
+
+Solution:
+
+// Always check if response exists
+if (result && result.data && result.data[0]) {
+    const imageUrl = result.data[0].url;
+} else {
+    console.error("Invalid response format");
+}
+5. File Size Too Large
+Error: Request entity too large
+
+Solution:
+
+Compress images before upload
+Limit file size (e.g., max 10MB)
+Implement client-side image compression
+// Validate file size
+if (file.size > 10 * 1024 * 1024) {
+    alert('File too large. Max 10MB');
+    return;
+}
+🎯 Best Practices
+1. Error Handling
+Always wrap API calls in try-catch blocks:
+
+async function detectImage() {
+    try {
+        const client = await Client.connect("space-name");
+        const result = await client.predict("/endpoint", { image: blob });
+        // Handle success
+    } catch (error) {
+        console.error("Detection failed:", error);
+        // Show user-friendly error message
+        alert("Failed to process image. Please try again.");
+    }
+}
+2. Loading States
+Provide visual feedback during API calls:
+
+// Show loading
+setLoading(true);
+
+try {
+    const result = await client.predict(...);
+    // Handle result
+} finally {
+    // Always hide loading
+    setLoading(false);
+}
+3. File Validation
+Validate files before sending:
+
+function validateFile(file) {
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+        throw new Error('Please upload an image file');
+    }
+    
+    // Check file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+        throw new Error('File size must be less than 10MB');
+    }
+    
+    return true;
+}
+4. Response Caching
+Cache responses to reduce API calls:
+
+const cache = new Map();
+
+async function detectWithCache(imageHash) {
+    if (cache.has(imageHash)) {
+        return cache.get(imageHash);
+    }
+    
+    const result = await client.predict(...);
+    cache.set(imageHash, result);
+    return result;
+}
+5. Timeout Handling
+Implement request timeouts:
+
+function withTimeout(promise, ms) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), ms)
+        )
+    ]);
+}
+
+// Usage
+await withTimeout(
+    client.predict("/endpoint", { image: blob }),
+    30000  // 30 second timeout
+);
+🚀 Adapting for Your Own Projects
+Step 1: Identify Your Gradio Space
+Replace with your Gradio Space name:
+
+const client = await Client.connect("YOUR-USERNAME/YOUR-SPACE-NAME");
+Step 2: Find Endpoint Names
+Visit your Space's API page:
+
+https://huggingface.co/spaces/YOUR-USERNAME/YOUR-SPACE-NAME
+Click "Use via API" to see available endpoints.
+
+Step 3: Update Parameters
+Match the parameters expected by your endpoint:
+
+// Example: Text generation endpoint
+const result = await client.predict("/generate", { 
+    prompt: "Your text here",
+    max_length: 100
+});
+
+// Example: Image classification
+const result = await client.predict("/classify", { 
+    image: blob
+});
+
+// Example: Audio transcription
+const result = await client.predict("/transcribe", { 
+    audio: audioBlob
+});
+Step 4: Parse Response Format
+Each endpoint returns different data structures:
+
+// Image endpoints typically return
+const [imageData, metadata] = result.data;
+
+// Text endpoints typically return
+const text = result.data;
+
+// Classification endpoints typically return
+const { label, confidence } = result.data;
+Step 5: Update UI Accordingly
+Modify the HTML/React components to display your specific results.
+
+📚 Additional Resources
+Official Documentation
+Gradio Documentation
+Gradio Client Library
+Hugging Face Spaces
+Example Gradio Spaces
+Image Classification: gradio/image-classification
+Text Generation: gradio/text-generation
+Object Detection: utkarsh-23/garbage-pothole-detector-app
+Community Support
+Gradio Discord
+Hugging Face Forums
+GitHub Issues
+🤝 Contributing
+Feel free to submit issues and enhancement requests!
+
+📄 License
+This project is open source and available under the MIT License.
+
+👨‍💻 Author
+Rishiraj Pathak
+
+GitHub: @Rishiraj-Pathak-27
+🎓 Learning Outcomes
+After studying this project, you'll understand:
+
+✅ How to connect web apps to ML models on Hugging Face
+✅ How to use Gradio Client library in browser and Node.js
+✅ How to handle file uploads and API responses
+✅ How to parse and display ML model outputs
+✅ Best practices for API integration
+✅ Error handling and user experience optimization
+Happy Coding! 🚀
