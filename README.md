@@ -1,3 +1,278 @@
+# Prarambh-Hackathon — Technical Implementation
+
+This repository contains two primary applications for the Prarambh Hackathon project:
+
+- `samadhan-app/` — A cross-platform mobile/desktop application built with Flutter (Dart).
+- `samadhan-webapp/` — A web application built with Next.js (TypeScript) and Tailwind CSS; integrates with Firebase.
+
+This README documents the technical stack, architecture, folder layout, environment/configuration, how to run and build each app, testing, suggested CI/CD, and troubleshooting notes.
+
+## Table of contents
+
+- Overview & high-level architecture
+- Tech stack
+- Repository layout
+- samadhan-app (Flutter)
+  - Requirements
+  - Folder structure
+  - Setup & run (pwsh)
+  - Build & release
+  - Testing and linting
+- samadhan-webapp (Next.js)
+  - Requirements
+  - Folder structure
+  - Environment variables
+  - Setup & run (pwsh)
+  - Build & deploy
+  - Testing and linting
+- CI/CD suggestions
+- Security and secrets
+- Troubleshooting
+- Next steps & contributions
+
+## Overview & high-level architecture
+
+This project is a small monorepo containing a Flutter client app (`samadhan-app`) and a web frontend (`samadhan-webapp`) that likely share the same backend/services (Firebase is present in the webapp). The two frontends may operate independently but often share concepts such as authentication and issue reporting.
+
+High-level components:
+
+- Client apps (Flutter & Next.js) — UI, client-side validation, state management.
+- Backend-as-a-Service (Firebase) — auth, firestore/database, storage, analytics (inferred from `src/lib/firebase.ts`).
+
+The architecture favors serverless / BaaS for rapid iteration and simple deployment.
+
+## Tech stack
+
+- Flutter (Dart) — cross-platform mobile & desktop app located at `samadhan-app/`.
+  - Uses `analysis_options.yaml` for linting rules.
+- Android / Windows build configuration included under `samadhan-app/android/` and `samadhan-app/windows/`.
+- Next.js (TypeScript) + Tailwind CSS — web app located at `samadhan-webapp/`.
+  - Uses `eslint`, `postcss`, and `tailwind` for styling and linting.
+- Firebase — present in the webapp (`samadhan-webapp/src/lib/firebase.ts`) and likely used by the Flutter app.
+
+## Repository layout
+
+Top-level files and folders:
+
+- `samadhan-app/` — Flutter mobile/desktop app
+  - `lib/` — Dart source for screens and app logic
+  - `android/`, `windows/` — platform-specific files
+  - `test/` — Flutter widget tests
+- `samadhan-webapp/` — Next.js TypeScript web app
+  - `src/` — Next.js pages and app code
+  - `public/` — static assets
+  - `package.json`, `tsconfig.json`, `tailwind.config.ts` — web config
+
+## samadhan-app (Flutter)
+
+### Requirements
+
+- Flutter SDK (install from https://flutter.dev). Recommended: stable channel.
+- Android SDK/Studio for Android builds (when building APKs)
+- For Windows desktop builds: Visual Studio with C++ workload.
+
+You can check Flutter is available with:
+
+```pwsh
+# shows flutter version and setup info
+flutter --version
+flutter doctor
+```
+
+### Folder structure (high level)
+
+- `lib/` — main Dart entrypoint and UI screens:
+  - `main.dart` — app entry
+  - `home_screen.dart`, `login_form.dart`, `signup_form.dart`, `report_issue_page.dart`, etc.
+- `android/`, `windows/` — platform integration and packaging.
+
+### Setup & run (pwsh)
+
+From the project root run (pwsh):
+
+```pwsh
+# go to Flutter app
+Set-Location samadhan-app
+
+# fetch dependencies
+flutter pub get
+
+# run on connected device or desktop (auto-selects an available device)
+flutter run
+
+# or run on Windows desktop explicitly
+flutter run -d windows
+
+# run Android (ensure emulator or device connected)
+flutter run -d android
+```
+
+### Build & release
+
+- Android APK:
+
+```pwsh
+Set-Location samadhan-app
+flutter build apk --release
+# outputs to build/app/outputs/flutter-apk/app-release.apk
+```
+
+- Windows executable:
+
+```pwsh
+Set-Location samadhan-app
+flutter build windows --release
+# outputs to build/windows/runner/Release
+```
+
+For iOS, use `flutter build ios` from macOS with Xcode installed.
+
+Note: Add platform-specific Firebase config files when using Firebase (e.g., `google-services.json` for Android and `GoogleService-Info.plist` for iOS). Do not commit these to source control.
+
+### Testing and linting
+
+- Run unit/widget tests:
+
+```pwsh
+Set-Location samadhan-app
+flutter test
+```
+
+- Lint & analyzer:
+
+```pwsh
+Set-Location samadhan-app
+flutter analyze
+```
+
+## samadhan-webapp (Next.js + TypeScript)
+
+### Requirements
+
+- Node.js (LTS recommended) and npm (or pnpm/yarn if you prefer). The project's `package.json` will indicate scripts.
+
+Check node/npm versions:
+
+```pwsh
+node --version
+npm --version
+```
+
+### Folder structure (high level)
+
+- `samadhan-webapp/src/app/` — Next.js app directory (app router)
+  - `globals.css`, `layout.tsx`, `page.tsx`
+- `samadhan-webapp/src/lib/` — helper libs (includes `firebase.ts`)
+- `samadhan-webapp/public/` — static assets
+- `samadhan-webapp/package.json` — scripts and dependencies
+
+### Environment variables
+
+If the webapp uses Firebase, you should create a local `.env.local` in `samadhan-webapp/` with keys prefixed `NEXT_PUBLIC_` for browser-safe values (example names — open `samadhan-webapp/src/lib/firebase.ts` to confirm keys):
+
+```
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+```
+
+Never commit real keys to git. Use CI secrets for production deployments.
+
+### Setup & run (pwsh)
+
+```pwsh
+Set-Location samadhan-webapp
+
+# install dependencies
+npm install
+
+# development server (hot reload)
+npm run dev
+
+# build for production
+npm run build
+
+# preview production build locally
+npm run start
+```
+
+If `package.json` uses `pnpm` or `yarn`, substitute the appropriate commands.
+
+### Build & deploy
+
+- Deploy to Vercel: Vercel handles Next.js seamlessly. Connect the GitHub repo & set environment variables in the Vercel dashboard.
+- Alternatively, build (`npm run build`) and deploy static/SSR content to a hosting provider (Netlify, Firebase Hosting, or your own Node server).
+
+### Testing and linting
+
+- Lint with ESLint (project contains `eslint.config.mjs`):
+
+```pwsh
+Set-Location samadhan-webapp
+npm run lint
+```
+
+Add unit / integration tests with Jest/Testing Library for React if required.
+
+## CI/CD suggestions
+
+- Create GitHub Actions workflows to build and test both projects on push/PR:
+  - Flutter workflow: matrix for OS (windows, ubuntu, macos) if building desktop; run `flutter analyze`, `flutter test`, and optionally `flutter build` for a release artifact.
+  - Web workflow: Node matrix (16/18/20), run `npm ci`, `npm run build`, `npm run lint`, optionally run tests.
+- Use artifacts for release binaries (APK, Windows EXE) and create GitHub Releases.
+- For deployments: use Vercel for `samadhan-webapp`, and Firebase Hosting if preferable. For mobile, use Play Store / App Store release flows.
+
+Example (high-level) GitHub Actions jobs:
+
+- `.github/workflows/flutter.yml` — runs `flutter analyze`, `flutter test`, builds APK for Android.
+- `.github/workflows/web.yml` — runs `npm ci`, `npm run build`, `npm run lint`, and deploys to Vercel via `vercel-action` or to Firebase via `Firebase CLI`.
+
+## Security and secrets
+
+- Do NOT store `google-services.json`, `GoogleService-Info.plist`, or any private keys in git. Use encrypted secrets in CI and environment variables for hosting providers.
+- Restrict Firebase rules in production and validate all client inputs server-side where possible.
+
+## Troubleshooting (common issues)
+
+- Flutter: "Missing Android SDK" — run `flutter doctor` and install Android Studio/SDK.
+- Flutter: build errors on Windows — ensure Visual Studio with required C++ workloads is installed.
+- Web: environment variables not available client-side — confirm keys are prefixed with `NEXT_PUBLIC_`.
+- Web: CORS or Firebase auth errors — ensure Firebase origin is authorized in Firebase console.
+
+## Next steps & contributions
+
+Suggested next improvements (small, low-risk):
+
+1. Add GitHub Actions workflows for both apps.
+2. Add a CONTRIBUTING.md with dev environment setup and branch rules.
+3. Add unit tests for critical flows (auth, issue reporting) and ensure they run in CI.
+4. Add a simple deploy script for the webapp (Vercel CLI or Firebase CLI) and publish a release pipeline for Android.
+
+Contributing:
+
+1. Fork the repo and create a feature branch.
+2. Run tests and lint locally.
+3. Open a PR against `main` with a description and testing steps.
+
+## Quick checklist for new devs
+
+- Install Flutter SDK and Node.js.
+- Open `samadhan-app/` and run `flutter pub get` and `flutter run`.
+- Open `samadhan-webapp/` and run `npm install` and `npm run dev`.
+- Add your local Firebase credentials in `.env.local` (web) and platform config files for Flutter (kept out of Git).
+
+---
+
+If you'd like, I can also:
+
+- Create example GitHub Actions workflows for both apps.
+- Add a `CONTRIBUTING.md` and `SECURITY.md`.
+- Generate a minimal `Makefile` or scripts to run common dev tasks across both projects.
+
+Tell me which follow-up you'd like and I'll implement it next.
 # Prarambh-Hackathon
 
 ## 🚀 Garbage & Pothole Detector - API Integration Guide
